@@ -1,0 +1,38 @@
+version: '3.3'
+services:
+
+  db:
+    image: postgres:13.10
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  backend:
+    depends_on:
+      - db
+    image: patinda/foodgram_backend
+    env_file: .env
+    volumes:
+      - static:/backend_static
+      - media:/app/media/
+
+  frontend:
+    image: patinda/foodgram_frontend
+    env_file: .env
+    command: cp -r /app/build/. /frontend_static/
+    volumes:
+      - static:/frontend_static
+
+  gateway:
+    image: patinda/foodgram_gateway
+    ports:
+      - '8000:80'
+    volumes:
+      - static:/staticfiles/
+      - media:/media/
+
+
+volumes:
+  pg_data:
+  static:
+  media:
